@@ -29,21 +29,14 @@ const SignUpPage = () => {
 					headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, username, fullname, password }),
 				});
+				const data = await res.json();
                 if(!res.ok){
-                    throw new Error(error.message);
+                    throw new Error(data.error || "Something went wrong");
                 }
-                const data = await res.json();
-                console.log(res);
-                if(data.error){
-                    throw new Error(data.error);
-                }
-                console.log(data);
                 return data;
 			}
 			catch(error){
-				console.log(error);
-				// toast.error(error.message);
-                throw error;
+                throw new Error(error);
 			}
 		},
 		onSuccess: () => {
@@ -56,13 +49,11 @@ const SignUpPage = () => {
 		e.preventDefault();
 		mutate(formData);
 		console.log(formData);
-};
+	};
 
 	const handleInputChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
-
-	// const isError = false;
 
 	return (
 		<div className='max-w-screen-xl mx-auto flex h-screen px-10'>

@@ -7,15 +7,12 @@ import { MdOutlineMail } from "react-icons/md";
 import { MdPassword } from "react-icons/md";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-// import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
 	const [formData, setFormData] = useState({
 		username: "",
 		password: "",
 	});
-
-	// const navigate = useNavigate();
 
 	const queryClient = useQueryClient();
 
@@ -56,8 +53,6 @@ const LoginPage = () => {
 	const handleInputChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
-
-	// const isError = false;
 
 	return (
 		<div className='max-w-screen-xl mx-auto flex h-screen'>

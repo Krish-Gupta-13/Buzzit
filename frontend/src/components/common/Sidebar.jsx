@@ -6,37 +6,33 @@ import { FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
 import {useMutation, useQueryClient, useQuery} from "@tanstack/react-query";
-import { toast } from "react-hot-toast";
+// import { toast } from "react-hot-toast";
 
 const Sidebar = () => {
 
 	const queryClient = useQueryClient();
-	const {mutate:logout} = useMutation({
+
+	const {mutate: logout} = useMutation({
 		mutationFn: async () => {
-            try{
-                const res = await fetch("/api/auth/logout", {
-                    method: "POST",
-                });
-				const data = res.json();
-                if(!res.ok){
-                    throw new Error(data.error || "Failed to log out");
-                }
-              console.log("Logged out successfully");  
-            }
-			catch(error){
-                // toast.error("Failed to log out");
+            try {
+				const res = await fetch("/api/auth/logout", {
+					method: "POST",
+				});
+				const data = await res.json();
+
+				if (!res.ok) {
+					throw new Error(data.error || "Something went wrong");
+				}
+			} catch (error) {
 				throw new Error(error);
-                console.error(error);
-            }
+			}
         },
-		onSucess: () =>{
-			// toast.success("Logged out successfully");
-			queryClient.invalidateQueries({queryKey: ["authUser"]});
-			console.log("Logged out successfully");
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["authUser"] });
 		},
-		onError: () =>{
-			toast.error("Failed to log out");
-		}
+		onError: () => {
+			toast.error("Logout failed");
+		},
 	})
 
 	const { data: authUser } = useQuery({ queryKey: ["authUser"] });

@@ -23,9 +23,15 @@ export const signup = async (req, res) => {
             return res.status(400).json({error: "Email already exists"});
         }
 
-        if(password.length<6){
-            res.status(400).json({error: "Password must be of 6 letters"})
+        if(!username){
+            return res.status(400).json({error: "Username is required"});
         }
+        
+
+        if(password.length<6){
+            return res.status(400).json({error: "Password must be of 6 letters"})
+        }
+
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
@@ -96,14 +102,14 @@ export const logout = async (req, res) => {
     try{
         res.cookie("jwt", "", {
             maxAge:0
-        })
+        });
         res.status(200).json({message: "Logged out successfully"});
     }
     catch(error){
         console.log("Error in logout", error.message);
         res.status(500).json({error: "Internal Server Error"});
     }
-}
+};
 
 export const getMe = async (req, res) => {
     try{

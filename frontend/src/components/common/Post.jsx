@@ -8,13 +8,23 @@ import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient  } from "@tanstack/react-query";
 import LoadingSpinner from "./LoadingSpineer";
 import { toast } from "react-hot-toast";
+import { formatPostDate } from "../../utils/date";
 
 const Post = ({ post }) => {
-	const [comment, setComment] = useState("");
+	const {data: authUser} = useQuery({queryKey: ["authUser"]});
 
 	const queryClient = useQueryClient();
+	
+	const [comment, setComment] = useState("");
+	
+	const postOwner = post.user;
 
-	const {data: authUser} = useQuery({queryKey: ["authUser"]});
+	const isLiked = post.likes.includes(authUser._id);
+
+	const isMyPost = authUser._id===post.user._id;
+
+	const formattedDate = formatPostDate(post.createdAt);
+
 
 	const {mutate: deletePost, isDeleting} = useMutation({
 		mutationFn: async () => {
@@ -48,28 +58,24 @@ const Post = ({ post }) => {
                 if(!res.ok){
                     throw new Error(data.error || "Failed to like post");
                 }
-                return data;
+				return data;
             } catch(error){
-                console.error(error);
-				return new Error(error.message);
+				throw new Error(error);
             }
         },
         onSuccess: (updatedLikes) => {
-            // toast.success("Liked post successfully");
-            // queryClient.invalidateQueries({queryKey: ["posts"]});
-			queryClient.setQueriesData(["posts"], (oldData) => {
+			queryClient.setQueryData(["posts"], (oldData) => {
 				return oldData.map((p) => {
-					if(p._id===post._id){
-						return {...p, likes: updatedLikes};
+					if (p._id === post._id) {
+						return { ...p, likes: updatedLikes };
 					}
 					return p;
-				})
-			})
+				});
+			});
         },
-		// onError: (error) => {
-        //     toast.error("Failed to like post");
-        //     console.error(error.message);
-        // }
+		onError: (error) => {
+            toast.error("Failed to like post");
+        }
      });
 
 	const {mutate: commentPost, isPending: isCommenting} = useMutation({
@@ -100,15 +106,7 @@ const Post = ({ post }) => {
 		onError: (error) => {
 			toast.error(error.message);
 		}
-	})
-	const postOwner = post.user;
-
-	const isLiked = post.likes.includes(authUser._id);
-
-	const isMyPost = authUser._id===post.user._id;
-
-	const formattedDate = "1h";
-
+	});
 
 	const handleDeletePost = () => {
 		deletePost();
