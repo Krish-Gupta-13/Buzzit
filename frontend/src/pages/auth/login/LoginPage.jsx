@@ -7,6 +7,9 @@ import { MdOutlineMail } from "react-icons/md";
 import { MdPassword } from "react-icons/md";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
+import { FaUser } from "react-icons/fa";
+import getLoginMutation from "../../../queries/usemutation/getLoginMutation";
+ 
 
 const LoginPage = () => {
 	const [formData, setFormData] = useState({
@@ -16,33 +19,7 @@ const LoginPage = () => {
 
 	const queryClient = useQueryClient();
 
-	const { mutate: loginMutation, isPending, isError, error} = useMutation({
-		mutationFn: async ({username, password}) => {
-			try{
-				const res = await fetch("/api/auth/login", {
-					method: "POST", 
-                    headers: { 
-						"Content-Type": "application/json" 
-					},
-                    body: JSON.stringify({ username, password }),
-				});
-				const data = await res.json();
-				console.log(data);
-				if(!res.ok){
-					throw new Error(data.error || "Something went wrong");
-				}
-				// return data;
-			}
-			catch(error){
-				throw new Error(error);
-			}	
-		},
-		onSuccess: () => { 
-			// toast.success("User Logged in successfully");
-			queryClient.invalidateQueries({ queryKey: ["authUser"]});
-			// navigate("/");
-		},
-	})
+	const {loginMutation, isPending, isError, error} = getLoginMutation();
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
@@ -64,7 +41,7 @@ const LoginPage = () => {
 					<XSvg className='w-24 lg:hidden fill-white' />
 					<h1 className='text-4xl font-extrabold text-white'>{"Let's"} go.</h1>
 					<label className='input input-bordered rounded flex items-center gap-2'>
-						<MdOutlineMail />
+						< FaUser/>
 						<input
 							type='text'
 							className='grow'

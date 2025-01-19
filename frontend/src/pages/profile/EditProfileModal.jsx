@@ -3,9 +3,7 @@ import useUpdateUserProfile from "../../hooks/useUpdate";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 
 const EditProfileModal = () => {
-	const queryClient = useQueryClient();
-	const {data: authUser} = useQuery({queryKey: ["authUser"]});
-
+	
 	const [formData, setFormData] = useState({
 		fullName: "",
 		username: "",
@@ -15,8 +13,11 @@ const EditProfileModal = () => {
 		newPassword: "",
 		currentPassword: "",
 	});
-
+	
+	const queryClient = useQueryClient();
+	const {data: authUser} = useQuery({queryKey: ["authUser"]});
 	const {updateProfile, isUpdatingProfile} = useUpdateUserProfile();
+	
 	const handleInputChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};

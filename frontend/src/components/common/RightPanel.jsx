@@ -3,25 +3,14 @@ import RightPanelSkeleton from "../skeletons/RightPanelSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import useFollow from "../../hooks/useFollow";
 import LoadingSpinner from "./LoadingSpineer";
-const RightPanel = () => {
 
-	const {data: suggestedUsers, isLoading} = useQuery({
-		queryKey: ["suggestedUsers"],
-        queryFn: async () => {
-            try{
-                const response = await fetch("/api/user/suggested");
-                if(!response.ok){
-                    throw new Error(data.message ||"Failed to fetch suggested users");
-                }
-                return await response.json();
-            }catch(error){
-                console.error(error);
-                throw new Error(error.message);
-            }
-        },
-	})
+import getSuggestedUsers from "../../queries/usequery/fetchSuggestedUsers";
+
+const RightPanel = () => {
+	
 
 	const {follow, isPending} = useFollow();
+	const {suggestedUsers, isLoading} = getSuggestedUsers();
 
 	if(suggestedUsers?.length===0) return <div className="md:w-64 w-0"></div> 
 

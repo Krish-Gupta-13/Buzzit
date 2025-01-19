@@ -6,49 +6,14 @@ import { FaUser } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa6";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import {toast} from "react-hot-toast";
+import fetchNotifications from "../../queries/usequery/fetchNotifications";
+import deleteNotificationsMutation from "../../queries/usemutation/deleteNotificationsMutation";
 
 const NotificationPage = () => {
+
 	const queryClient = useQueryClient();	
-
-	const {data: notifications, isLoading} = useQuery({
-		queryKey: ["notifications"],
-		queryFn: async () => {
-			try{
-                const res = await fetch("/api/notification");
-                const data = await res.json();
-				if(!res.ok){
-					throw new Error(data.error || "Failed to fetch notifications");
-				}
-                return data;
-            } catch(error){
-				throw new Error(error);
-            }
-		},
-	})
-
-	const {mutate: deleteNotifications} = useMutation({
-		mutationFn: async () => {
-			try{
-				const res = await fetch("/api/notification", {
-					method: "DELETE",
-				});
-				const data = await res.json();
-				if(!res.ok){
-					throw new Error(data.error || "Failed to delete notifications");
-				}
-				return data;
-			} catch(error){
-				return new Error(error);
-			}
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({queryKey: ["notifications"]});
-			toast.success("Notifications deleted successfully");
-		},
-		onError: (error) => {
-			toast.error(error.message);
-		}
-	})
+	const { notifications, isLoading } = fetchNotifications();
+	const { deleteNotifications } = deleteNotificationsMutation();
 
 	return (
 		<>

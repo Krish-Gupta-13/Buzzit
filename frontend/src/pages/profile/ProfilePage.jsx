@@ -12,9 +12,12 @@ import { IoCalendarOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { formatMemberSinceDate } from "../../utils/date";
+
+
 import { useQuery } from "@tanstack/react-query";
 import useFollow from "../../hooks/useFollow";
 import useUpdateUserProfile from "../../hooks/useUpdate";
+import fetchUserProfile from "../../queries/usequery/fetchUserProfile";
 
 const ProfilePage = () => {
 	const [coverImg, setCoverImg] = useState(null);
@@ -23,36 +26,15 @@ const ProfilePage = () => {
 
 	const coverImgRef = useRef(null);
 	const profileImgRef = useRef(null);
-
-	
 	const {username} = useParams();
+	
 	const {data:authUser} = useQuery({ queryKey: ["authUser"] });
 	const {follow, isPending} = useFollow();
-
-	const {data:user, isLoading, refetch, isRefetching} = useQuery({
-		queryKey: ["userProfile", username],
-		queryFn: async () => {
-			try{
-				const res = await fetch(`/api/user/profile/${username}`);
-				const data = await res.json();
-				console.error("API Error:", data);
-
-				if(!res.ok){
-					throw new Error(data.error || "Failed to fetch user");
-				}
-				return data;
-			} catch(error){
-				throw new Error(error);
-			}
-		},
-	});
-
+	const {user, isLoading, refetch, isRefetching} = fetchUserProfile({username});
 
 	const memberJoniedFrom = formatMemberSinceDate(user?.createdAt);
 	const isMyProfile = authUser._id === user?._id;;
 	const amIFollowing = authUser?.following.includes(user?._id);
-
-
 
 	const handleImgChange = (e, state) => {
 		const file = e.target.files[0];
